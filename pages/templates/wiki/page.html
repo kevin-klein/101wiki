@@ -1,0 +1,52 @@
+{% extends 'wiki/layout.html' %}
+
+{% block title %}
+  {{page.full_title}}
+{% endblock %}
+
+{% block content %}
+  <a class='btn btn-secondary' href='{{repo_link.url}}'>Github</a>
+
+  {{content|safe}}
+
+  {% if metadata|length > 0 %}
+    <a href="/Section:Metadata"><h2>Metadata</h2></a>
+    <div>
+      {% for item in metadata %}
+        <div class='triple' style="margin-bottom: 5px;">
+          <button class='btn btn-sm btn-secondary'>this</button> <a href='/{{"Property:"|add:item.predicate}}'>{{item.predicate}}</a> <a class='btn btn-sm btn-secondary' href='/{{item.object}}'>{{item.object}}</a>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if resources|length > 0 %}
+    <a href="/Section:Metadata"><h2>Resources</h2></a>
+    <div>
+      {% for item in resources %}
+        <div class='triple'>
+          <button class='btn btn-secondary'>this</button> <a href='/{{"Property:"|add:item.predicate}}'>{{item.predicate}}</a> <a class='btn btn-sm btn-secondary' href='{{item.object}}'>{{item.object}}</a>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block history %}
+  {% for change in changes %}
+    <label class="one-page-change">
+      <input data-page-change="16054" type="radio">
+        <img class="small_avatar" src="https://avatars3.githubusercontent.com/u/8490924?v=4">
+        <a href="mailto:heinz@uni-koblenz.de">
+          Marcel Heinz
+        </a>
+      edited this article
+      at {{ change.created_at }}.
+      <a href="/page_changes/diff/16054/" target="_blank">Show diff with next revision</a>
+      |
+        <a href="/page_changes/apply/16054">Apply revision</a>
+        |
+      <a href="/page_changes/show/16054" target="_blank">Show revision</a>
+    </label>
+  {% endfor %}
+{% endblock %}
