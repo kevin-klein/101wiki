@@ -7,6 +7,8 @@ from creole.parser.creol2html_parser import CreoleParser
 from pygments import highlight, lexers
 from pygments.formatters import HtmlFormatter
 
+from django.contrib.auth.base_user import AbstractBaseUser
+
 def get_pygments_formatter():
     return HtmlFormatter(linenos = True, encoding='utf-8',
                          style='colorful', outencoding='utf-8',
@@ -99,20 +101,37 @@ class MetadataCollector(creol2html_emitter.HtmlEmitter):
         else:
             return creol2html_emitter.HtmlEmitter.link_emit(self, node)
 
-class User(models.Model):
+class SchemaCollector(MetadataCollector):
+
+    def __init__(self, document):
+        MetadataCollector.__init__(self, document)
+
+        self.sections = []
+
+    def header_emit(self, node):
+        self.sections.append(node.content)
+        return MetadataCollector.header_emit(self, node)
+
+class User(AbstractBaseUser):
     email = models.CharField(max_length=100)
     role = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
-    github_name = models.CharField(max_length=100)
-    github_avatar = models.CharField(max_length=100)
-    github_token = models.CharField(max_length=100)
-    github_uid = models.CharField(max_length=100)
+    username = models.CharField(max_length=100, db_column='github_name', null=True)
+    github_avatar = models.CharField(max_length=100, null=True)
+    github_token = models.CharField(max_length=100, null=True)
+    github_uid = models.CharField(max_length=100, null=True)
+    last_login = models.DateTimeField(null=True)
+    password = models.CharField(max_length=200, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    USERNAME_FIELD = 'username'
+
     developer = models.BooleanField(default=False)
     last_message_id = models.CharField(max_length=100, null=True)
+
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'users'
@@ -125,6 +144,64 @@ class Page(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def validate(self):
+        SCHEMA_PREDICATES = [
+            'hasMandatory',
+            'hasOptional'
+        ]
+
+        namespace_page = Page.objects.get(namespace='Namespace', title=self.namespace)
+
+        errors = []
+        warnings = []
+
+        schema_triples = Triple.objects.filter(page__namespace='Namespace', page__title=self.namespace, predicate__in=SCHEMA_PREDICATES)
+
+        document = CreoleParser(self.raw_content.replace('<', '<<').replace('>', '>>')).parse()
+        emitter = SchemaCollector(document)
+        emitter.emit()
+
+        metadata = emitter.metadata
+        sections = emitter.sections
+
+        properties = [item['predicate'] for item in metadata]
+
+        # validate sections and properties
+        for triple in schema_triples:
+            if triple.predicate == 'hasOptional':
+                namespace, title = triple.object.split(':')
+                if namespace == 'Section':
+                    if title not in sections:
+                        warnings.append({
+                            'type': 'missing_optional_section',
+                            'section': triple.object
+                        })
+                elif namespace == 'Property':
+                    if title not in properties:
+                        warnings.append({
+                            'type': 'missing_optional_property',
+                            'section': triple.object
+                        })
+            elif triple.predicate == 'hasMandatory':
+                namespace, title = triple.object.split(':')
+                if namespace == 'Section':
+                    if title not in sections:
+                        errors.append({
+                            'type': 'missing_optional_section',
+                            'section': triple.object
+                        })
+                elif namespace == 'Property':
+                    if title not in properties:
+                        errors.append({
+                            'type': 'missing_optional_property',
+                            'section': triple.object
+                        })
+
+        print(warnings)
+        print(errors)
+        # for triple in schema_triples:
+        #     print(triple.__dict__)
 
     def full_title(self):
         return self.namespace + ":" + self.title
@@ -183,6 +260,9 @@ class Triple(models.Model):
     predicate = models.CharField(max_length=100)
     object = models.CharField(max_length=100)
 
+    def __str__(self):
+        return str(self.__dict__)
+
     class Meta:
         db_table = 'triples'
 
@@ -199,6 +279,8 @@ def import_data(data):
         Page(**page).save()
 
     for user in data['users']:
+        user['username'] = user['github_name']
+        del user['github_name']
         User(**user).save()
 
     for triple in data['triples']:

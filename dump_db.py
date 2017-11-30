@@ -6,7 +6,7 @@ import datetime
 conn = psycopg2.connect("dbname=wiki_development user=postgres password=root110120")
 
 cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-cursor.execute('select title, raw_content, namespace, verified, created_at, updated_at from pages')
+cursor.execute('select id, title, raw_content, namespace, verified, created_at, updated_at from pages')
 
 def datetime_handler(x):
     if isinstance(x, datetime.datetime):

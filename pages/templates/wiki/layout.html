@@ -20,45 +20,36 @@
         <ul class="navbar-nav mr-auto">
 
         </ul>
-        <form class="form-inline my-2 my-lg-0">
-          <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>
+        {% block search %}
+          <form class="form-inline my-2 my-lg-0" action="/search" method="POST">
+            {% csrf_token %}
+            {{ search_form }}
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+          </form>
+        {% endblock %}
+        {% if request.user.is_authenticated %}
+          <a href='#'>{{request.user.name}}</a>
+        {% else %}
+          {% if debug %}
+          <div class="dropdown">
+            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Local Login
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              {% for user in users %}
+                <a class="dropdown-item" href="/local_login/?username={{ user.name }}">{{user.name}}</a>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+          <a class="btn btn-sm btn-primary" href="{% url "social:begin" "github" %}">Github Login</a>
+        {% endif %}
       </div>
     </nav>
     <div class='container'>
-      <ul class="nav nav-tabs">
-        <li class="nav-item">
-          <a class="nav-link active" href="#page" data-toggle="tab">101wiki</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#help" data-toggle="tab">Help</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#history" data-toggle="tab">History</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled" href="#similarities" data-toggle="tab">Similarities</a>
-        </li>
-      </ul>
+      {% block content %}
 
-      <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="page" role="tabpanel" aria-labelledby="home-tab">
-          {% block content %}
-          {% endblock %}
-        </div>
-        <div class="tab-pane fade" id="help" role="tabpanel">...</div>
-        <div class="tab-pane fade" id="history" role="tabpanel">
-          {% block history %}
-          {% endblock %}
-        </div>
-
-        <div class="tab-pane fade" id="similarities" role="tabpanel">
-
-        </div>
-      </div>
-
-
+      {% endblock %}
 
     </div>
 

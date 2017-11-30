@@ -1,0 +1,65 @@
+{% extends 'wiki/layout.html' %}
+
+{% block content %}
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link active" href="#page" data-toggle="tab">101wiki</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#history" data-toggle="tab">History</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#similarities" data-toggle="tab">Similarities</a>
+  </li>
+
+  {% if request.user.is_authenticated %}
+    <li class="nav-item">
+      <a class="nav-link" href="#help" data-toggle="tab">Help</a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="#edit" data-toggle="tab">Edit</a>
+    </li>
+  {% endif %}
+</ul>
+
+<div class="tab-content" id="myTabContent">
+  {% if request.user.is_authenticated %}
+    <div class="tab-pane fade show active" id="help" role="tabpanel" aria-labelledby="home-tab">
+      {% block help %}
+
+      {% endblock %}
+    </div>
+
+    <div class="tab-pane fade show active" id="edit" role="tabpanel">
+      {% block edit %}
+
+      {% endblock %}
+    </div>
+  {% endif %}
+
+  <div class="tab-pane fade show active" id="page" role="tabpanel" aria-labelledby="home-tab">
+    {% block page_content %}
+    {% endblock %}
+  </div>
+  <div class="tab-pane fade" id="history" role="tabpanel">
+    {% block history %}
+    {% endblock %}
+  </div>
+
+  <div class="tab-pane fade" id="similarities" role="tabpanel">
+    {% block similarities %}
+      <h4>10 most similar pages:</h4>
+
+      <ul>
+      {% for page in similarities %}
+        <li>
+          <a href='/{{page.full_title}}'>{{page.full_title}} - {{page.meta.score}}</a>
+        </li>
+      {% endfor %}
+      </ul>
+    {% endblock %}
+  </div>
+</div>
+
+{% endblock %}
