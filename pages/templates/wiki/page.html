@@ -5,6 +5,22 @@
 {% endblock %}
 
 {% block page_content %}
+  {% if validation.warnings|length > 0 %}
+    <div class="alert alert-info" role="alert">
+      {% for warning in validation.warnings %}
+        {{warning}}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if validation.errors|length > 0 %}
+    <div class="alert alert-error" role="alert">
+      {% for error in validation.errors %}
+        {{warning}}
+      {% endfor %}
+    </div>
+  {% endif %}
+
   <h1><a href='/Namespace:{{page.namespace}}'>{{page.namespace}}</a>:{{page.title}}</h1>
 
   <a class='btn btn-secondary' href='{{repo_link.url}}'>Github</a>

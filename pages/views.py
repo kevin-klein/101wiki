@@ -43,7 +43,7 @@ def page(request, name):
         namespace = 'Concept'
         title = pieces[0]
     page = Page.objects.get(namespace=namespace, title=title)
-    page.validate()
+    validation = page.validate()
 
     changes = page.pagechange_set.all
 
@@ -63,7 +63,10 @@ def page(request, name):
     except ObjectDoesNotExist:
         repo_link = None
 
+    print(validation)
+
     context = {
+        'validation': validation,
         'user': request.user,
         'similarities': s,
         'users': User.objects.all(),

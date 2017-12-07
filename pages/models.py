@@ -136,6 +136,19 @@ class User(AbstractBaseUser):
     class Meta:
         db_table = 'users'
 
+class ValidationMessage(object):
+    pass
+
+class ValidationInfo(ValidationMessage):
+
+    def message(self):
+        return ''
+
+class ValidationError(ValidationMessage):
+
+    def message(self):
+        pass
+
 class Page(models.Model):
     title = models.CharField(max_length=100)
     raw_content = models.TextField()
@@ -198,10 +211,10 @@ class Page(models.Model):
                             'section': triple.object
                         })
 
-        print(warnings)
-        print(errors)
-        # for triple in schema_triples:
-        #     print(triple.__dict__)
+        return {
+            'errors': errors,
+            'warnings': warnings
+        }
 
     def full_title(self):
         return self.namespace + ":" + self.title
