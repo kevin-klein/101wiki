@@ -2,6 +2,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import login, authenticate
+import elasticsearch.exceptions
 
 from .models import Page, PageChange, User
 from .forms import SearchForm
@@ -63,7 +64,11 @@ def page(request, name):
     except ObjectDoesNotExist:
         repo_link = None
 
-    print(validation)
+    try:
+        s = list(s)
+    except elasticsearch.exceptions.ElasticsearchException as e:
+        s = []
+
 
     context = {
         'validation': validation,
