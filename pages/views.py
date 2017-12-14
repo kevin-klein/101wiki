@@ -69,7 +69,6 @@ def page(request, name):
     except elasticsearch.exceptions.ElasticsearchException as e:
         s = []
 
-
     context = {
         'validation': validation,
         'user': request.user,
