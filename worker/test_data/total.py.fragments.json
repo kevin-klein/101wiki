@@ -1,0 +1,19 @@
+{
+    "imports": [],
+    "fragments": [
+        {
+            "classifier": "class",
+            "name": "Total",
+            "start": 0,
+            "end": 2,
+            "fragments": [
+                {
+                    "classifier": "function",
+                    "name": "total",
+                    "start": 1,
+                    "end": 2
+                }
+            ]
+        }
+    ]
+}

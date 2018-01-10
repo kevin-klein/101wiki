@@ -7,7 +7,7 @@ import os
 import json
 
 def abs_path(path):
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', path))
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', path))
 
 env = {
     'config101': abs_path('../101worker/configs/production.json'),

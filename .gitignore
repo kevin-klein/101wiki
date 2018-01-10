@@ -6,7 +6,6 @@ __pycache__/
 # C extensions
 *.so
 
-*.json
 *.sqlite3
 
 # Distribution / packaging

@@ -194,22 +194,33 @@ class Page(models.Model):
                     if title not in properties:
                         warnings.append({
                             'type': 'missing_optional_property',
-                            'section': triple.object
+                            'property': triple.object
                         })
             elif triple.predicate == 'hasMandatory':
                 namespace, title = triple.object.split(':')
                 if namespace == 'Section':
                     if title not in sections:
                         errors.append({
-                            'type': 'missing_optional_section',
+                            'type': 'missing_mandatory_section',
                             'section': triple.object
                         })
                 elif namespace == 'Property':
                     if title not in properties:
                         errors.append({
-                            'type': 'missing_optional_property',
-                            'section': triple.object
+                            'type': 'missing_mandatory_property',
+                            'property': triple.object
                         })
+
+        allowed_sections = [triple.object.split(':')[1] for triple in schema_triples if 'Section:' in triple.object]
+        print(allowed_sections)
+        print(sections)
+        for section in sections:
+            if section not in allowed_sections:
+                errors.append({
+                    'type': 'invalid_section',
+                    'section': section
+                })
+                # raise
 
         return {
             'errors': errors,

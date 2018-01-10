@@ -8,15 +8,35 @@
   {% if validation.warnings|length > 0 %}
     <div class="alert alert-info" role="alert">
       {% for warning in validation.warnings %}
-        {{warning}}
+        {% if warning.type == 'missing_optional_section' %}
+          <p>
+            optional section '{{warning.section}}' is not used
+          </p>
+        {% elif warning.type == 'missing_optional_property' %}
+          <p>
+            optional property '{{warning.property}}' is not used
+          </p>
+        {% endif %}
       {% endfor %}
     </div>
   {% endif %}
 
   {% if validation.errors|length > 0 %}
-    <div class="alert alert-error" role="alert">
+    <div class="alert alert-danger" role="alert">
       {% for error in validation.errors %}
-        {{warning}}
+        {% if error.type == 'missing_mandatory_section' %}
+          <p>
+            mandatory section '{{error.section}}' is not used
+          </p>
+        {% elif error.type == 'missing_mandatory_property' %}
+          <p>
+            mandatory property '{{error.property}}' is not used
+          </p>
+        {% elif error.type == 'invalid_section' %}
+          <p>
+            invalid section '{{error.section}}' is used
+          </p>
+        {% endif %}
       {% endfor %}
     </div>
   {% endif %}
