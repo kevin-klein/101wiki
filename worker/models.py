@@ -121,7 +121,7 @@ class JavaScriptExtractor(object):
         elif node.type == 'VariableDeclaration':
             names = [decl.id.name for decl in node.declarations]
             return {
-                'classifier': 'variable',
+                'classifier': 'assign',
                 'start': node.loc.start.line,
                 'end': node.loc.end.line,
                 'names': names
@@ -131,20 +131,64 @@ class JavaScriptExtractor(object):
             raise
 
 class PythonExtractor(object):
-
     def extract(self, source):
-        tree = asttokens.ASTTokens(source, parse=True)
-        # print(tree.body)
-        # print(dir(tree.body))
+        self.source = source
+        atok = asttokens.ASTTokens(source, parse=True)
+        self.imports = []
 
-        print(dir(tree.tree))
-        for node in tree.tree.body:
-            self._extract_fragment(node)
+        fragments = [self._extract_fragment(node) for node in atok.tree.body]
+        fragments = list(filter(bool, fragments))
+
+        return {
+            'imports': self.imports,
+            'fragments': fragments
+        }
 
     def _extract_fragment(self, node):
+        start = self.get_lineno(node.first_token.startpos)
+        end = self.get_lineno(node.last_token.endpos)
+
         if isinstance(node, ast.ClassDef):
-            print(dir(node))
+            fragments = [self._extract_fragment(node) for node in node.body]
+
             return {
                 'classifier': 'class',
-                'name': node.name
+                'name': node.name,
+                'start': start,
+                'end': end,
+                'fragments': fragments
             }
+
+        elif isinstance(node, ast.Assign):
+            return {
+                'classifier': 'assign',
+                'name': node.targets[0].id,
+                'start': start,
+                'end': end
+            }
+
+        elif isinstance(node, ast.FunctionDef):
+            return {
+                'classifier': 'function',
+                'name': node.name,
+                'start': start,
+                'end': end
+            }
+        elif isinstance(node, ast.Import):
+            names = [alias.name for alias in node.names]
+            self.imports.extend(names)
+
+        elif isinstance(node, ast.ImportFrom):
+            self.imports.append(node.module)
+
+        else:
+            print(node)
+            raise
+
+    def get_lineno(self, pos):
+        return self.source.count('\n', 0, pos)
+
+class HaskellFactExtractor(object):
+
+    def extract(self, source):
+        pass

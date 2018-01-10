@@ -2,6 +2,9 @@
 import os
 import sys
 
+import sys
+sys.path.append(os.path.abspath('../javalang'))
+
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "wiki.settings")
     try:

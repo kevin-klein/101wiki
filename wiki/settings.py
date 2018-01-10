@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'pages',
+    'worker',
     'social_django',
     'django_elasticsearch_dsl'
 ]

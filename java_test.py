@@ -47,7 +47,7 @@ public class Total {
 
 import json
 
-print(json.dumps(fragments, indent=4))
+# print(json.dumps(fragments, indent=4))
 
 e2 = JavaScriptExtractor()
 fragments = e2.extract("""
@@ -102,7 +102,7 @@ function check_precedence(m,jqo){
 }
 """)
 
-print(json.dumps(fragments, indent=4))
+# print(json.dumps(fragments, indent=4))
 
 
 e3 = PythonExtractor()
@@ -117,20 +117,24 @@ import esprima
 import ast
 
 class JavaExtractor(object):
+    i = 12345
 
-	def extract(self, source):
-	    self.source = source
-	    tree = javalang.parse.parse(source)
+    def extract(self, source):
+        self.source = source
+        tree = javalang.parse.parse(source)
 
-	    return {
-	        'imports': self._extract_imports(tree),
-	        'package': self._extract_package(tree),
-	        'fragments': self._extract_fragments(tree)
-	    }
+        return {
+        'imports': self._extract_imports(tree),
+        'package': self._extract_package(tree),
+        'fragments': self._extract_fragments(tree)
+        }
 
-	def _extract_annotations(self, tree):
-	    return [annotation.name for annotation in tree.annotations]
+    def _extract_annotations(self, tree):
+        return [annotation.name for annotation in tree.annotations]
 
 """)
 
-# print(fragments)
+print(fragments)
+
+with open('worker/models.py') as f:
+    print(json.dumps(e3.extract(f.read()), indent=4))
