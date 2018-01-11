@@ -2,10 +2,10 @@ from .worker import *
 
 import javalang
 import javalang.tree
-
 import esprima
-
 import ast, asttokens
+import subprocess
+import sqlparse
 
 class JavaExtractor(object):
 
@@ -63,7 +63,7 @@ class JavaExtractor(object):
                 'name': param.name,
                 'type': param.type.name,
                 'annotations': param.annotations,
-                'modifiers': list(param.modifiers)
+                'modifiers': sorted(list(param.modifiers))
             } for param in node.parameters]
             return {
                 **base,
@@ -71,7 +71,7 @@ class JavaExtractor(object):
                 'classifier': 'method',
                 'params': params,
                 'annotations': [],
-                'modifiers': list(node.modifiers)
+                'modifiers': sorted(list(node.modifiers))
             }
         elif isinstance(node, javalang.tree.ConstructorDeclaration):
             params = [{
@@ -79,7 +79,7 @@ class JavaExtractor(object):
                 'name': param.name,
                 'type': param.type.name,
                 'annotations': param.annotations,
-                'modifiers': list(param.modifiers)
+                'modifiers': sorted(list(param.modifiers))
             } for param in node.parameters]
 
             return {
@@ -87,7 +87,7 @@ class JavaExtractor(object):
                 'classifier': 'constructor',
                 'params': params,
                 'annotations': [],
-                'modifiers': list(node.modifiers)
+                'modifiers': sorted(list(node.modifiers))
             }
         else:
             print(node)
@@ -188,7 +188,24 @@ class PythonExtractor(object):
     def get_lineno(self, pos):
         return self.source.count('\n', 0, pos)
 
-class HaskellFactExtractor(object):
+class HaskellExtractor(object):
 
     def extract(self, source):
-        pass
+        dirname = os.path.dirname(__file__)
+        path = os.path.join(dirname, 'extractors', 'haskell', 'extractor.hs')
+
+        p = subprocess.Popen(path, shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+        output = p.communicate(input=source.encode())[0]
+
+        return json.loads(output.decode('utf-8'))
+
+class SqlExtractor(object):
+
+    def extract(self, source):
+        source = sqlparse.parse(source)
+
+        for stmt in source:
+            print(dir(stmt.tokens[0]))
+
+        return source

@@ -1,0 +1,89 @@
+{
+    "imports": [],
+    "fragments": [
+        {
+            "classifier": "type",
+            "name": "Company",
+            "startLine": 1,
+            "endLine": 2
+        },
+        {
+            "classifier": "type",
+            "name": "Employee",
+            "startLine": 4,
+            "endLine": 5
+        },
+        {
+            "classifier": "type",
+            "name": "Name",
+            "startLine": 7,
+            "endLine": 8
+        },
+        {
+            "classifier": "type",
+            "name": "Address",
+            "startLine": 10,
+            "endLine": 11
+        },
+        {
+            "classifier": "type",
+            "name": "Salary",
+            "startLine": 13,
+            "endLine": 14
+        },
+        {
+            "classifier": "pattern",
+            "name": "sampleCompany",
+            "startLine": 16,
+            "endLine": 29
+        },
+        {
+            "classifier": "pattern",
+            "name": "total",
+            "startLine": 31,
+            "endLine": 33
+        },
+        {
+            "classifier": "function",
+            "name": "salaries",
+            "startLine": 35,
+            "endLine": 37
+        },
+        {
+            "classifier": "function",
+            "name": "getSalaries",
+            "startLine": 39,
+            "endLine": 42
+        },
+        {
+            "classifier": "function",
+            "name": "getSalary",
+            "startLine": 44,
+            "endLine": 46
+        },
+        {
+            "classifier": "function",
+            "name": "cut",
+            "startLine": 48,
+            "endLine": 50
+        },
+        {
+            "classifier": "function",
+            "name": "cutEmployees",
+            "startLine": 52,
+            "endLine": 55
+        },
+        {
+            "classifier": "function",
+            "name": "cutEmployee",
+            "startLine": 57,
+            "endLine": 59
+        },
+        {
+            "classifier": "pattern",
+            "name": "main",
+            "startLine": 61,
+            "endLine": 64
+        }
+    ]
+}

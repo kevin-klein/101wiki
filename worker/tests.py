@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .models import JavaExtractor, PythonExtractor
+from .models import JavaExtractor, PythonExtractor, HaskellExtractor, SqlExtractor
 import os
 import json
 
@@ -19,6 +19,11 @@ def read_test_result(name):
 
 class ExtractorTestCase(TestCase):
 
+    def __init__(self, *args):
+        TestCase.__init__(self, *args)
+
+        self.maxDiff = None
+
     def extractor(self):
         pass
 
@@ -26,11 +31,12 @@ class ExtractorTestCase(TestCase):
         code = read_test_data(name)
         fragments = self.extractor().extract(code)
 
+        # print(fragments)
         # print(json.dumps(fragments, indent=4))
 
         expected = read_test_result(name)
 
-        self.assertDictEqual(fragments, expected)
+        self.assertEqual(fragments, expected)
 
 class JavaTestCase(ExtractorTestCase):
     def extractor(self):
@@ -48,3 +54,34 @@ class PythonTestCase(ExtractorTestCase):
 
     def test_company(self):
         self.extract('company.py')
+
+
+class HaskellTestCase(ExtractorTestCase):
+    def extractor(self):
+        return HaskellExtractor()
+
+    def test_extractor(self):
+        self.extract('main.hs')
+
+# class SqlTest(ExtractorTestCase):
+#
+#     def extractor(self):
+#         return SqlExtractor()
+#
+#     def test_company(self):
+#         self.extract('sql/Company.sql')
+#
+#     def test_cut(self):
+#         self.extract('sql/Cut.sql')
+#
+#     def test_sample(self):
+#         self.extract('sql/sampleCompany.sql')
+#
+#     def test_median(self):
+#         self.extract('sql/median.sql')
+#
+#     def test_setup(self):
+#         self.extract('sql/setup.sql')
+#
+#     def test_arrays(self):
+#         self.extract('sql/array.sql')

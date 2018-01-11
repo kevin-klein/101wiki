@@ -1,5 +1,4 @@
 #!/usr/bin/env runhaskell
-{-# OPTIONS_GHC -fno-warn-tabs #-}
 
 import Text.JSON
 import System.Exit
@@ -14,7 +13,7 @@ main = do
    input <- getContents
    let lines = toLines input
    case parseModule input of
-     (ParseFailed _ _) -> do
+     (ParseFailed (SrcLoc _ line col) e) -> do
        putStrLn "Haskell parser failed."
        abnormal
      (ParseOk (HsModule _ _ _ imports decls)) -> do
