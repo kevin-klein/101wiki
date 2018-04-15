@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'pages',
     'worker',
     'social_django',
-    'django_elasticsearch_dsl'
 ]
 
 ELASTICSEARCH_DSL = {

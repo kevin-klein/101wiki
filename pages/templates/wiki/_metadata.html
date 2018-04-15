@@ -1,0 +1,21 @@
+{% if metadata|length > 0 %}
+  <a href="/Section:Metadata"><h2>Metadata</h2></a>
+  <div>
+    {% for item in metadata %}
+      <div class='triple' style="margin-bottom: 5px;">
+        <button class='btn btn-sm btn-secondary'>this</button> <a href='/{{"Property:"|add:item.predicate}}'>{{item.predicate}}</a> <a class='btn btn-sm btn-secondary' href='/{{item.object}}'>{{item.object}}</a>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+{% if resources|length > 0 %}
+  <a href="/Section:Metadata"><h2>Resources</h2></a>
+  <div>
+    {% for item in resources %}
+      <div class='triple'>
+        <button class='btn btn-secondary'>this</button> <a href='/{{"Property:"|add:item.predicate}}'>{{item.predicate}}</a> <a class='btn btn-sm btn-secondary' href='{{item.object}}'>{{item.object}}</a>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}

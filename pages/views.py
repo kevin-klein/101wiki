@@ -5,8 +5,7 @@ from django.contrib.auth import login, authenticate
 import elasticsearch.exceptions
 
 from .models import Page, PageChange, User
-from .forms import SearchForm
-from .documents import PageDocument
+from .forms import SearchForm, PageForm
 
 def local_login(request):
     user = authenticate(username=request.GET['username'])
@@ -50,24 +49,35 @@ def page(request, name):
 
     metadata, resources = page.metadata()
 
-    s = PageDocument.search()
+    # s = PageDocument.search()
+    #
+    # like = [{
+    #     "_index" : "pages",
+    #     "_id" : page.id
+    # }]
+    #
+    # s = s.query('more_like_this', like=like, fields=['raw_content'], min_term_freq=1,max_query_terms=1)
+    #
+    # try:
+    #     repo_link = page.repolink
+    # except ObjectDoesNotExist:
+    #     repo_link = None
+    #
+    # try:
+    #     s = list(s)
+    # except elasticsearch.exceptions.ElasticsearchException as e:
+    #     s = []
+    s = []
+    repo_link = None
 
-    like = [{
-        "_index" : "pages",
-        "_id" : page.id
-    }]
+    form = PageForm(instance=page)
 
-    s = s.query('more_like_this', like=like, fields=['raw_content'], min_term_freq=1,max_query_terms=1)
-
-    try:
-        repo_link = page.repolink
-    except ObjectDoesNotExist:
-        repo_link = None
-
-    try:
-        s = list(s)
-    except elasticsearch.exceptions.ElasticsearchException as e:
-        s = []
+    if request.method == 'POST':
+        f = PageForm(request.POST, instance=page)
+        if f.is_valid():
+            f.save()
+        else:
+            raise
 
     context = {
         'validation': validation,
@@ -80,6 +90,7 @@ def page(request, name):
         'changes': changes,
         'metadata': metadata,
         'resources': resources,
-        'repo_link': repo_link
+        'repo_link': repo_link,
+        'form': form
     }
     return render(request, 'wiki/page.html', context)

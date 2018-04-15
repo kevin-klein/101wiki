@@ -1,0 +1,24 @@
+{% extends 'wiki/page_layout.html' %}
+
+{% block title %}
+  Script for {{page.full_title}}
+{% endblock %}
+
+{% block page_content %}
+  <h1><a href='/Namespace:{{page.namespace}}'>{{page.namespace}}</a>:{{page.title}}</h1>
+
+  <a class='btn btn-secondary' href='{{repo_link.url}}'>Github</a>
+
+  {{page.render_to_html|safe}}
+
+  {% include "wiki/_metadata.html" with metadata=page.only_metadata resources=page.only_resources %}
+
+  {% for page in other_pages %}
+    <hr />
+    <h1><a href='/Namespace:{{page.namespace}}'>{{page.namespace}}</a>:{{page.title}}</h1>
+
+    {{page.render_to_html|safe}}
+
+    {% include "wiki/_metadata.html" with metadata=page.only_metadata resources=page.only_resources %}
+  {% endfor %}
+{% endblock %}
