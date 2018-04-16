@@ -1,0 +1,232 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <title>101wiki</title>
+  <meta content='width=device-width, initial-scale=1.0' name='viewport'>
+
+  <link rel="stylesheet" href="{% static "pages/bootstrap.css" %}">
+
+  <script src="{% static "pages/jquery-3.2.1.slim.min.js" %}"></script>
+  <script src="{% static "pages/d3.js" %}"></script>
+  <script src="{% static "pages/d3.layout.cloud.js" %}"></script>
+
+
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600' rel='stylesheet' type='text/css'>
+
+  <style>
+
+img {
+    margin-bottom: 10px;
+}
+.col-md-6 {
+    text-align: justify;
+}
+
+.page {
+  font-size: 17px;
+}
+
+.big-list li a {
+    line-height: 2em;
+}
+
+text:hover {
+    opacity: 0.7 !important;
+}
+
+text {
+    cursor: pointer;
+    opacity: 1;
+}
+
+.header-nav-link {
+  /* line-height: 55px !important; */
+  vertical-align: middle;
+  font-size: 16px;
+}
+
+.navbar-brand {
+  vertical-align: middle;
+  font-size: 22px;
+  color: white !important;
+}
+
+.tag-cloud {
+  width: 100%;
+  min-height: 300px;
+  height: 100%;
+}
+
+.frontpage-description {
+  margin-right: 20px;
+}
+
+html {
+  max-height: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+body {
+  max-height: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  font-weight: 300;
+  font-family: Open Sans,Source Sans Pro,Helvetica,Arial,sans-serif;
+}
+
+h2 {
+  font-size: 25px;
+}
+
+.nav-link {
+  color: #9d9d9d;
+}
+
+/* .col-md-3 {
+    padding-bottom: 100%;
+    margin-bottom: -100%;
+} */
+
+.category-title {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.page-preview {
+  padding: 3px;
+
+  h2 {
+    font-weight: bold;
+    font-size: 16px;
+  }
+}
+
+hr {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.search-query {
+  margin-top: 22px;
+}
+  </style>
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js">
+  </script>
+  <![endif]-->
+  <!-- Le fav -->
+  <!-- <script>
+    // History, and back button
+    $(function() {
+      $('a.scroll').click(function(e) {
+        e.preventDefault();
+        var hash = this.hash;
+        $('html, body').animate({
+          scrollTop: $(this.hash).offset().top - 20
+        }, 500, function(){
+          // when done, add hash to url
+          // (default click behaviour)
+          window.location.hash = hash;
+        });
+      });
+    });
+  </script> -->
+</head>
+<!-- activate scrollspy -->
+<body data-spy='scroll' data-target='.navbar' id='top'>
+  <nav class="navbar navbar-inverse bg-dark navbar-expand-lg navbar-fixed-top" style="height: 80px">
+    <a class="navbar-brand" href="#">
+      <img src='' alt='logo'  />
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id='navbarSupportedContent'>
+      <ul class='navbar-nav mr-auto nav' role="tablist">
+        <li class='nav-item active'>
+          <a class='scroll brand-4 nav-link' href='#101' data-toggle="tab" role="tab">What's 101?</a>
+        </li>
+        <li class="nav-item">
+          <a class='scroll brand-4 nav-link' href='#languages' data-toggle="tab" role="tab">Languages</a>
+        </li>
+        <li class="nav-item">
+          <a class='scroll brand-4 nav-link' href='#technologies' data-toggle="tab" role="tab">Technologies</a>
+        </li class="nav-item">
+        <li class='hidden-sm'>
+          <a class='scroll brand-4 nav-link' href='#features' data-toggle="tab" role="tab">Features</a>
+        </li>
+        <li class="nav-item">
+          <a class='scroll brand-1 nav-link' href='#contributions' data-toggle="tab" role="tab">Contributions</a>
+        </li>
+        <li class="nav-item">
+          <a class='scroll brand-4 nav-link' href='#courses' data-toggle="tab" role="tab">Courses</a>
+        </li>
+      </ul>
+
+      <form class='form-inline my-2 my-lg-0' action='/search'>
+        <div class='form-group'>
+          <input class='form-control mr-sm-2' name='q' value='' id='search-query' placeholder="Search" type='search'>
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </div>
+      </form>
+    </div>
+  </nav>
+
+
+  <div class="tab-content page">
+    <div class="tab-pane show active" id='technologies' role="tabpanel">
+      {% include 'wiki/_landing_tab.html' with pages=technology_pages tag_class_name='technologies-cloud' tagcloud_data=technologies %}
+    </div>
+
+    <div class="tab-pane" id='features' role="tabpanel">
+      {% include 'wiki/_landing_tab.html' with pages=feature_pages tag_class_name='features-cloud' tagcloud_data=features %}
+    </div>
+
+    <div class="tab-pane" id='languages' role="tabpanel">
+      {% include 'wiki/_landing_tab.html' with pages=language_pages tag_class_name='languages-cloud' tagcloud_data=languages %}
+    </div>
+
+    <div class="tab-pane active" id='101' role="tabpanel">
+      {% include 'wiki/_101.html' with tag_class_name='one-cloud' tagcloud_data=languages %}
+    </div>
+
+    <div class="tab-pane" id='contributions' role="tabpanel">
+      {% include 'wiki/_landing_tab.html' with pages=contribution_pages tag_class_name='contributions-cloud' tagcloud_data=contributions %}
+    </div>
+
+    <div class='tab-pane' id='courses' role="tabpanel">
+      <div class='container'>
+        <div class='row inner-page'>
+          <div class='col-md-12'>
+            {{ courses_content|safe }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script src="{% static "pages/popper.min.js" %}"></script>
+  <script src="{% static "pages/bootstrap.js" %}"></script>
+
+  <script>
+    // $(document).ready(function() {
+    //   console.log('init');
+    //   var hash = window.location.hash;
+    //   hash && $('a[href="' + hash + '"]').tab('show');
+    //
+    //   $('.nav a').click(function (e) {
+    //     var scrollmem = $('body').scrollTop();
+    //     window.location.hash = this.hash;
+    //     $('html,body').scrollTop(scrollmem);
+    //   });
+    //
+    //   $("#flash-modal").modal({ show : true });
+    // });
+  </script>
+</body>

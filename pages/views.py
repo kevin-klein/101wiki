@@ -2,9 +2,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import login, authenticate
+from django.db.models import Count
 import elasticsearch.exceptions
+import json
 
-from .models import Page, PageChange, User
+from .models import Page, PageChange, User, Triple
 from .forms import SearchForm, PageForm
 
 def local_login(request):
@@ -15,7 +17,43 @@ def local_login(request):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
+
+    def cloud_data(namespace):
+        return {row['object']:row['object__count'] for row in Triple.objects.filter(object__startswith=namespace+':').values("object").annotate(Count('object')).order_by()[:30] }
+
+    def popular_contributions():
+        return {'Contribution:' + row['page__title']:row['page__title__count'] for row in Triple.objects.filter(page__namespace='Contribution').values("page__title").annotate(Count('page__title')).order_by('page__title')[:300] }
+
+    technology_pages = Page.objects.filter(namespace='Technology')[:5]
+    technologies = cloud_data('Technology')
+
+    feature_pages = Page.objects.filter(namespace='Feature')[:5]
+    features = cloud_data('Feature')
+
+    contribution_pages = Page.objects.filter(namespace='Contribution')[:5]
+    contributions = popular_contributions()
+
+    language_pages = Page.objects.filter(namespace='Language')[:5]
+    languages = cloud_data('Language')
+
+    # @front_page = PageModule.front_page
+    # @courses_page = PageModule.courses_page
+    front_page = Page.objects.get(namespace='Internal', title='FrontPage')
+    courses_page = Page.objects.get(namespace='Internal', title='Courses')
+
+    return render(request, 'wiki/front_page.html', {
+        'technologies': json.dumps(technologies),
+        'technology_pages': technology_pages,
+        'feature_pages': feature_pages,
+        'features': features,
+        'contributions': contributions,
+        'contribution_pages': contribution_pages,
+        'languages': languages,
+        'language_pages': language_pages,
+        'front_page_content': front_page.render_to_html(),
+        'courses_content': courses_page.render_to_html()
+    })
+
 
 def search(request):
     form = SearchForm(request.POST)

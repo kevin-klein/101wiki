@@ -1,7 +1,7 @@
 from django.db import models, DatabaseError, transaction
-
 from creole import creole2html
 from creole.parser.creol2html_parser import CreoleParser
+import html2text
 
 from .emitters import *
 
@@ -97,6 +97,14 @@ class Page(models.Model):
         document = CreoleParser(self.raw_content.replace('<', '<<').replace('>', '>>')).parse()
         return WikiEmitter(document).emit()
 
+    def render_to_text(self):
+        h = html2text.HTML2Text()
+        h.ignore_links = True
+        return h.handle(self.render_to_html()).replace('#', '')
+
+    def preview(self):
+        return ' '.join(self.render_to_text().split(' ')[:25]) + ' ...'
+
     def metadata(self):
         document = CreoleParser(self.raw_content.replace('<', '<<').replace('>', '>>')).parse()
         emitter = MetadataCollector(document)
@@ -115,7 +123,6 @@ class Page(models.Model):
     def only_metadata(self):
         metadata, _ = self.metadata()
         return metadata
-
 
     def only_resources(self):
         _, resources = self.metadata()
